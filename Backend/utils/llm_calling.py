@@ -1,6 +1,11 @@
 import ollama
 import logging
 import ast
+from openai import AzureOpenAI
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def get_gemma_response(system_prompt, user_prompt):
     model_name = "gemma3:1b"
@@ -55,3 +60,16 @@ def parse_llm_output(gpt_response: str) -> dict:
     logging.error("Failed to parse GPT output; returning empty dictionary.")
     return {}
 
+def call_openai(system_prompt:str,user_prompt:str, model="gpt-4o-mini", temperature=0):
+    client = AzureOpenAI(api_key=os.getenv("AZURE_OPENAI_API_KEY"),azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),api_version=os.getenv("AZURE_OPENAI_VERSION"))
+    
+    response = client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        temperature=temperature,
+        max_tokens= 16000
+    )
+    return response.choices[0].message.content

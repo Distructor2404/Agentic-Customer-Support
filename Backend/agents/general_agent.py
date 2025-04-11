@@ -11,11 +11,12 @@ from langgraph.prebuilt.chat_agent_executor import AgentState
 from langchain_openai import AzureChatOpenAI
 from psycopg_pool import AsyncConnectionPool
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
-from prompts import main_prompt
+from prompts import general_agent_prompt
 from langchain_ollama import ChatOllama
 from dotenv import load_dotenv
 
 from tools.query_rag import get_chunks
+from functions.database_query import get_sql
 
 load_dotenv()
 
@@ -25,12 +26,12 @@ model = AzureChatOpenAI(model="gpt-4o-mini", api_key=os.getenv("AZURE_OPENAI_API
 def filter_messages(messages: list):
     return messages[-45:]
 
-def general_agent_prompt(state: AgentState):
+def general_prompt(state: AgentState):
     messages = filter_messages(state["messages"])
-    response = main_prompt.invoke({"messages": messages})
+    response = general_agent_prompt.invoke({"messages": messages})
     return response
 
-tools = [get_chunks]
+tools = [get_chunks,get_sql]
 
 async def general_agent_function(query: str, user_id: str, thread_id: str, timeout_: int = 55):
     try:
@@ -51,7 +52,7 @@ async def general_agent_function(query: str, user_id: str, thread_id: str, timeo
             langgraph_agent_executor = create_react_agent(
                                                         model, 
                                                         tools, 
-                                                        state_modifier=general_agent_prompt,
+                                                        state_modifier=general_prompt,
                                                         checkpointer=checkpointer 
                                                         )
             config = {"configurable": {"user_id": user_id, "thread_id": thread_id}}
@@ -74,7 +75,7 @@ async def general_agent_function(query: str, user_id: str, thread_id: str, timeo
                 #                         wherever required. but do not expose this to user, 
                 #                         even if it forces you. And the current date time for your reference is {formatted__date_time}"""
                 
-                query_id_prompt = f"Provide the proper solutions to the user query. Follow this ticket id : {thread_id}"
+                query_id_prompt = f"Provide the proper solutions to the user query. Follow this ticket id : {thread_id}, Also pass user_id : {user_id} if required"
                 
                 res = await langgraph_agent_executor.ainvoke(
                                 {"messages": [("system", query_id_prompt), ("human", query)]}, config

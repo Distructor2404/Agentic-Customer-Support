@@ -22,7 +22,6 @@ from langchain_core.output_parsers import StrOutputParser
 from fastapi import HTTPException
 import qdrant_client.models
 
-# Load environment variables
 load_dotenv()
 
 model = AzureChatOpenAI(model="gpt-4o",

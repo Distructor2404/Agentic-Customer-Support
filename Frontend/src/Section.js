@@ -63,6 +63,19 @@ function Section() {
 
     };
 
+    const components = {
+        table: ({ node, ...props }) => (
+          <div className="table-container">
+            <table className="markdown-table" {...props} />
+          </div>
+        ),
+        thead: ({ node, ...props }) => <thead className="markdown-thead" {...props} />,
+        tbody: ({ node, ...props }) => <tbody className="markdown-tbody" {...props} />,
+        tr: ({ node, ...props }) => <tr className="markdown-tr" {...props} />,
+        th: ({ node, ...props }) => <th className="markdown-th" {...props} />,
+        td: ({ node, ...props }) => <td className="markdown-td" {...props} />
+      };
+
 
     const sendChatMessage = async (query, passedTicketId = null) => {
         setIsLoading(true);
@@ -80,7 +93,7 @@ function Section() {
                 body: JSON.stringify({
                     query,
                     ticket_id: "123",
-                    user_id: "user_1",
+                    user_id: "11111111-1111-1111-1111-111111111111",
                     query_id: "query_1"
                 })
             });
@@ -161,7 +174,7 @@ function Section() {
                                 ) : (
                                     <ReactMarkdown
                         remarkPlugins={[remarkGfm, remarkGemoji]}
-                       
+                        components={components}
                       >
                                     {msg.content}
                                     </ReactMarkdown>
