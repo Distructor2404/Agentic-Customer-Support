@@ -1,0 +1,11 @@
+AZURE_OPENAI_API_KEY = "-----"
+AZURE_OPENAI_ENDPOINT = "-----"
+AZURE_OPENAI_VERSION = "-----"
+
+DB_URI = "postgresql://localhost:5432/customer_support"
+
+QDRANT_API_KEY = "------"
+QDRANT_URL = "-------"
+QDRANT_COLLECTION = "customer_support"
+
+AGENT_MODEL = "gemma3:4b"

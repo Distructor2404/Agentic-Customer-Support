@@ -1,0 +1,48 @@
+CREATE TABLE customer_support_tickets (
+    ticket_id UUID PRIMARY KEY,
+    issue_category TEXT DEFAULT '',
+    sentiment TEXT DEFAULT '',
+    priority TEXT DEFAULT '',
+    solution TEXT DEFAULT '',
+    resolution_status TEXT DEFAULT '',
+    date_of_resolution DATE DEFAULT NULL,
+    CONSTRAINT status_check CHECK (resolution_status IN ('resolved', 'active', 'backlogged'))
+);
+
+CREATE TABLE users (
+                user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),  
+                first_name VARCHAR(50),
+                last_name VARCHAR(50),
+                email VARCHAR(100) UNIQUE,
+                phone_number VARCHAR(15) UNIQUE,
+                balance NUMERIC(12, 2) DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                deleted_at TIMESTAMP,
+                modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+
+            
+
+CREATE TABLE amounts (
+                amount_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),  
+                amount NUMERIC(12, 2),
+                currency VARCHAR(3),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                deleted_at TIMESTAMP,
+                modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            
+CREATE TABLE transactions (
+                transaction_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),  
+                user_id UUID REFERENCES users(user_id),  
+                amount_id UUID REFERENCES amounts(amount_id),  
+                transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                transaction_type VARCHAR(10) CHECK (transaction_type IN ('credit', 'debit')),
+                status VARCHAR(20) CHECK (status IN ('failed', 'paid', 'on hold')),
+                source_name VARCHAR(100),
+                destination_name VARCHAR(100),
+                payment_mode VARCHAR(20) CHECK (payment_mode IN ('card', 'UPI', 'netbanking')),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                deleted_at TIMESTAMP,
+                modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
